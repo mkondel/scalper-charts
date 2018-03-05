@@ -32,7 +32,9 @@ class VolumeProfileChart extends React.Component {
 
 		const changeCalculator = change();
 
-		const { type, data: initialData, width, ratio } = this.props;
+		const { type, data: initialData, width, ratio, height } = this.props;
+
+		console.log(height)
 
 		const calculatedData = changeCalculator(initialData);
 		const xScaleProvider = discontinuousTimeScaleProvider
@@ -49,7 +51,7 @@ class VolumeProfileChart extends React.Component {
 		const xExtents = [start, end];
 
 		return (
-			<ChartCanvas height={400}
+			<ChartCanvas height={height}
 				width={width}
 				ratio={ratio}
 				margin={{ left: 80, right: 80, top: 10, bottom: 30 }}

@@ -20,7 +20,11 @@ const parseDate = timeParse("%Y-%m-%d");
 
 export function getData() {
 
-	return getHistoricalCandles(60*60*24, 'BTC-USD')
+	// return getHistoricalCandles(60*60*24, 'BTC-USD')
+	// return getHistoricalCandles(60*60, 'BTC-USD')
+	// return getHistoricalCandles(60*15, 'BTC-USD')
+	// return getHistoricalCandles(60*5, 'BTC-USD')
+	return getHistoricalCandles(60, 'BTC-USD')
 
 	// const promiseMSFT = fetch("//rrag.github.io/react-stockcharts/data/MSFT.tsv")
 	// 	.then(response => response.text())

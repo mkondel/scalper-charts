@@ -6,7 +6,7 @@ import { getData } from "./utils"
 
 import { TypeChooser } from "react-stockcharts/lib/helper";
 
-const heightFactor = 0.8
+const heightFactor = 1
 
 class ChartComponent extends React.Component {
 	updateDimensions() {
@@ -29,13 +29,12 @@ class ChartComponent extends React.Component {
 		if (this.state == null) {
 			return <div>Loading...</div>
 		}
-		return (
-			<TypeChooser>
-				{type => <Chart type={type} data={this.state.data} height={this.state.height}/>}
-			</TypeChooser>
-		)
+		return <Chart className='dark' type={'hybid'} data={this.state.data} height={this.state.height}/>
 	}
 }
+			// <TypeChooser>
+			// 	{type => <Chart type={type} data={this.state.data} height={this.state.height}/>}
+			// </TypeChooser>
 
 render(
 	<ChartComponent />,

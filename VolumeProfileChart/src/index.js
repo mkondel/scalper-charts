@@ -21,7 +21,7 @@ class ChartComponent extends React.Component {
 		getData(60).then(a => {
 			console.log('loaded 1min candles')
 			this.setState({ a }, ()=>{
-				getData(60*60*24).then(b => {
+				getData(60*60).then(b => {
 					console.log('loaded 1hr candles')
 					this.setState({ b }, ()=>{
 						getData(60*15).then(c => {

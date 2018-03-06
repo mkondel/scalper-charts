@@ -45,4 +45,4 @@ And this is what it looks like on Mar 5, 2018:
 ![Picture](https://user-images.githubusercontent.com/3288757/37013145-67d9b83a-20c6-11e8-94d0-2dba51cb5856.png)
 
 # <a name="demo"></a>Live Demo
-[Scalper Helper](http://scalperhelper.us-east-1.elasticbeanstalk.com/ "Scalper Helper") demo running on AWS Beanstalk.
+[Scalper Helper](http://scalper-helper.us-east-1.elasticbeanstalk.com/ "Scalper Helper") demo running on AWS Beanstalk.

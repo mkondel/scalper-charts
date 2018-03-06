@@ -18,3 +18,6 @@ For example:
 |        |        |
 |========|========|
 ```
+
+And this is what it looks like on Mar 5, 2018:
+[[https://user-images.githubusercontent.com/3288757/37013145-67d9b83a-20c6-11e8-94d0-2dba51cb5856.png]]

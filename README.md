@@ -2,10 +2,10 @@
 - ~Volume profile, MACD, RSI~
 - Live candle updates via WebSockets
 - Save all settings and chart tools
-- Allow fibs and trendlines
 - Each chart can toggle:
  -- Time interval: 1min, 5min, 15min, 30min, 1hr, 4hr, 1day, 1week
  -- Indicators: BB, volume profile, RSI, MACD
+- Allow fibs and trendlines
 
 For example:
 

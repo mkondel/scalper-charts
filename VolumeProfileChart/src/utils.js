@@ -21,6 +21,7 @@ export function getData(span=60) {
 	// return getHistoricalCandles(60*60, 'BTC-USD')
 	// return getHistoricalCandles(60*15, 'BTC-USD')
 	// return getHistoricalCandles(60*5, 'BTC-USD')
+	// console.log(`span is ${span}`)
 	return getHistoricalCandles(span, 'BTC-USD')
 
 	// const promiseMSFT = fetch("//rrag.github.io/react-stockcharts/data/MSFT.tsv")
@@ -46,7 +47,7 @@ const parseDataArray = ({candle, product}) => ({
 export function getHistoricalCandles(granularity, product){
 	const url = `https://api.gdax.com/products/${product}/candles?granularity=${granularity}`;
 	// const url = '//rrag.github.io/react-stockcharts/data/MSFT.tsv'
-	console.log(new Date(), url)
+	// console.log(new Date(), url)
 	// return Promise.resolve([1,2,3,4,5])
 	return fetch(url)
 	.then(res=>res.json())

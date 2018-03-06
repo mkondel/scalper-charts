@@ -1,5 +1,6 @@
 
 import React from 'react';
+import FA from 'react-fontawesome';
 import { render } from 'react-dom';
 import Chart from './Chart';
 import { getData } from "./utils"
@@ -14,17 +15,23 @@ class ChartComponent extends React.Component {
 		this.setState({ height, width });
 	}
 	componentDidMount() {
+		this.updateDimensions();
+		window.addEventListener("resize", this.updateDimensions.bind(this));
+
 		getData(60).then(a => {
 			console.log('loaded 1min candles')
-			getData(60*60).then(b => {
-				console.log('loaded 1hr candles')
-				getData(60*15).then(c => {
-					console.log('loaded 15min candles')
-					getData(60*60*24).then(d => {
-						console.log('loaded 1day candles')
-						this.setState({ a, b, c, d }, ()=>{
-							this.updateDimensions();
-							window.addEventListener("resize", this.updateDimensions.bind(this));
+			this.setState({ a }, ()=>{
+				getData(60*60*24).then(b => {
+					console.log('loaded 1hr candles')
+					this.setState({ b }, ()=>{
+						getData(60*15).then(c => {
+							console.log('loaded 15min candles')
+							this.setState({ c }, ()=>{
+								getData(60*60*24).then(d => {
+									console.log('loaded 1day candles')
+									this.setState({ d })
+								})
+							})
 						})
 					})
 				})
@@ -35,9 +42,8 @@ class ChartComponent extends React.Component {
 		window.removeEventListener("resize", this.updateDimensions.bind(this));
 	}
 	render() {
-		console.log(Object.keys(window))
 		if (this.state == null) {
-			return <div>Loading...</div>
+			return <FA name="cog" spin size='5x' />
 		}
 
 		return <div>
@@ -50,7 +56,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={100}
 					volumeProfileBins={24}
-				/> : 'loading 1min candles'}
+				/> : <span><FA name="cog" spin size='5x' /> 1min candles</span>}
 	{this.state.b?
 				<Chart 
 					type='hybrid'
@@ -59,7 +65,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={100}
 					volumeProfileBins={24}
-				/>: 'loading 15min candles'}
+				/>: <span><FA name="cog" spin size='5x' /> 15min candles</span>}
 			</div>
 			<div className='panes'>
 	{this.state.c?
@@ -70,7 +76,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={100}
 					volumeProfileBins={24}
-				/>: 'loading 1hr candles'}
+				/>: <span><FA name="cog" spin size='5x' /> 1hr candles</span>}
 	{this.state.d?
 				<Chart 
 					type='hybrid'
@@ -79,7 +85,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={100}
 					volumeProfileBins={24}
-				/>: 'loading 1day candles'}
+				/>: <span><FA name="cog" spin size='5x' /> 1day candles</span>}
 			</div>
 		</div>
 	}

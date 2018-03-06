@@ -1,4 +1,5 @@
-- 4 pane window with 2x2 charts
+~ 4 pane window with 2x2 charts ~
+~ Volume profile, MACD, RSI ~
 - Save all settings and chart tools
 - Allow fibs and trendlines
 - Each chart can toggle:
@@ -7,6 +8,7 @@
 
 For example:
 
+```
 |========|========|
 |   1m   |   1h   |
 |        |        |
@@ -14,3 +16,4 @@ For example:
 |   5m   |   1d   |
 |        |        |
 |========|========|
+```

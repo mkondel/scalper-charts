@@ -4,3 +4,12 @@
     /*background: #1C2030;*/
     /*color: white;*/
 }
+
+.panes {
+    display: flex;
+}
+
+.react-stockchart {
+    /*background: cyan;*/
+    /*border: 1px solid black;*/
+}

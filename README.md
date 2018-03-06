@@ -22,3 +22,8 @@ For example:
 And this is what it looks like on Mar 5, 2018:
 
 ![alt text](https://user-images.githubusercontent.com/3288757/37013145-67d9b83a-20c6-11e8-94d0-2dba51cb5856.png)
+
+How to run:
+- git clone
+- cd scalper-charts
+- yarn && yarn start

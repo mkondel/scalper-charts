@@ -1,5 +1,6 @@
 - ~4 pane window with 2x2 charts~
 - ~Volume profile, MACD, RSI~
+- Live candle updates via WebSockets
 - Save all settings and chart tools
 - Allow fibs and trendlines
 - Each chart can toggle:

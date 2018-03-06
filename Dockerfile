@@ -1,4 +1,4 @@
-FROM node
+FROM node:alpine
 ADD ./VolumeProfileChart /code
 WORKDIR /code
 RUN yarn

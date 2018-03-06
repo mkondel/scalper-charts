@@ -1,5 +1,9 @@
+scalper-charts helps traders make educated decisions fast. The typical use-case is to have 4 time frames open on the same asset. Time your entry/exits on the smallest time scale, while keeping an eye on the long term trends.
+
+# Contents
 * [Project goals](#goals)
 * [Original idea](#idea)
+* [Examples](#examples)
 * [Screenshots](#pics)
 * [How to run](#how)
 
@@ -21,7 +25,6 @@ yarn && yarn start
 ```
 
 # <a name="idea"></a>Original idea
-For example:
 
 ```
 |========|========|
@@ -32,6 +35,9 @@ For example:
 |        |        |
 |========|========|
 ```
+
+# <a name="examples"></a>Examples
+By default the windows are 1min, 15min, 1hour and 1day. The indicators are Bollinger bands, MACD, RSI and volume profile.
 
 # <a name="pics"></a>Screenshots
 And this is what it looks like on Mar 5, 2018:

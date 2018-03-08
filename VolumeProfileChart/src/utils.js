@@ -17,22 +17,33 @@ export const getInitialData = ({getState, stateUpdate}) =>
 
 
 const enableLiveUpdates = ({getState, stateUpdate}) => {
+	const chartUpdateInterval = 500
+	const state = getState()
+	//put on  a timer
+	setInterval(
+		()=>{
+			// get the latest window size
+			const stateNow = getState()
+			state.width = stateNow.width
+			state.height = stateNow.height
+			stateUpdate(state)
+		}, 
+		chartUpdateInterval
+	)
 	const addTrade = ({price, date, size}) => {
 		[	{pane:'a',interval: 60},
 			{pane:'b',interval: 60*5},
 			{pane:'c',interval: 60*15},
 			{pane:'d',interval: 60*60}
 		].map(({pane, interval}) => {
-			const state = getState()
 			const chart = state[pane]
 			if(chart){
 				let last = chart[chart.length-1]
 				// new candle
 				if(new Date() - last.date > interval*1000){
-					const newCandleDate = new Date(last.date.getTime() + interval*1000)
 					// add a new candle to the chart
 					chart.push({
-						date: newCandleDate,
+						date: new Date(last.date.getTime() + interval*1000),
 						open: price,
 						high: price,
 						low: price,
@@ -46,7 +57,7 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 				last.volume += size
 				// console.log(`${pane} ${last.close} ${last.volume}`)
 				chart[chart.length-1] = last
-				stateUpdate({[pane]: chart})
+				state[pane] = chart
 			}
 		})
 	}

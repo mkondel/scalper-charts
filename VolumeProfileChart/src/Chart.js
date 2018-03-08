@@ -44,6 +44,8 @@ class VolumeProfileChart extends React.Component {
 
 		const { type, data: initialData, width, ratio, height, maxCandles, volumeProfileBins } = this.props;
 
+		const candleOffset = 3
+
 		// const mainChartHeight = height/2
 		const mainChartHeight = height * 5/8
 		const subChartHeight = height * 1/8 - 10
@@ -119,7 +121,7 @@ class VolumeProfileChart extends React.Component {
 		const start = xAccessor(last(data));
 		// const end = xAccessor(data[Math.max(0, data.length - 150)]);
 		const end = xAccessor(data[Math.max(0, data.length - maxCandles)]);
-		const xExtents = [start+10, end];
+		const xExtents = [start+candleOffset, end];
 
 		return (
 			<ChartCanvas height={height}

@@ -2,30 +2,66 @@ window.ws = new WebSocket("wss://ws-feed.gdax.com");
 var params = {"type": "subscribe","channels": [{"name": "matches","product_ids": ["BTC-USD",]}]}
 window.ws.onopen = () => window.ws.send(JSON.stringify(params))
 
-export function getData(span=60) {
-	// return getHistoricalCandles(60*60*24, 'BTC-USD')
-	// return getHistoricalCandles(60*60, 'BTC-USD')
-	// return getHistoricalCandles(60*15, 'BTC-USD')
-	// return getHistoricalCandles(60*5, 'BTC-USD')
-	// console.log(`span is ${span}`)
-	return getHistoricalCandles(span, 'BTC-USD')
+export const getInitialData = ({getState, stateUpdate}) =>
+	getData(60).then(a => stateUpdate({ a }, ()=>
+		getData(60*60).then(b => stateUpdate({ b }, ()=>
+			getData(60*15).then(c => stateUpdate({ c }, ()=>
+				getData(60*60*24).then(d => stateUpdate({ d }, ()=> {
+						console.log('initial data loaded')
+						enableLiveUpdates({getState, stateUpdate})
+					}
+				))
+			))
+		))
+	))
+
+
+const enableLiveUpdates = ({getState, stateUpdate}) => {
+	const addTrade = ({price, date, size}) => {
+		console.log(`i am the trade `);
+		// console.log(`i am the trade ${price} ${side} ${size}`)
+		['a','b','c','d'].map(pane => {
+			const state = getState()
+			const chart = state[pane]
+			const first = chart[0]
+			const last = chart[chart.length-1]
+			// console.log(`${pane} ${first.date} ${last.date}`)
+
+			
+			last.close = price
+			last.volume += size
+			// console.log(`${pane} ${last.close} ${last.volume}`)
+			chart[chart.length-1] = last
+			stateUpdate({[pane]: chart})
+		})
+	}
+	window.ws.onmessage = (msg) => {
+		var data = JSON.parse(msg.data);
+		const product = data.product_id;
+		const price = parseFloat(data.price)
+		const date = data.date
+		const size = parseFloat(data.size)
+		const usd = price * size
+		switch(data.type) {
+			case 'match':
+				switch(product) {
+					case 'BTC-USD':
+						// console.log(`${price} ${side} ${size} $${usd}`)
+						addTrade({price, date, size})
+						break;
+				}
+				break;
+			case 'last_match':
+				console.log(`handle last match to set the last candle... ${price} ${date} ${data.size} $${usd}`)
+				break;
+		}
+	}
 }
 
+const getData = span => getHistoricalCandles(span, 'BTC-USD')
 
-// this is for parsing candle data from GDAX
-const parseDataArray = ({candle, product}) => ({
-	date: new Date(candle[0]*1000),
-	open: candle[3],
-	high: candle[2],
-	low: candle[1],
-	close: candle[4],
-	volume: candle[5],
-	split: null,
-	dividend: null,
-	product,
-})
 // pulls historical candles form GDAX for a given granularity
-export function getHistoricalCandles(granularity, product){
+function getHistoricalCandles(granularity, product){
 	const url = `https://api.gdax.com/products/${product}/candles?granularity=${granularity}`;
 	return fetch(url)
 	.then(res=>res.json())
@@ -39,24 +75,16 @@ export function getHistoricalCandles(granularity, product){
 	})
 	.then(candles=>candles ? candles.reverse().map(candle=>parseDataArray({candle, product})) : null)
 }
+// this is for parsing candle data from GDAX
+const parseDataArray = ({candle, product}) => ({
+	date: new Date(candle[0]*1000),
+	open: candle[3],
+	high: candle[2],
+	low: candle[1],
+	close: candle[4],
+	volume: candle[5],
+	split: null,
+	dividend: null,
+	product,
+})
 
-window.ws.onmessage = (msg) => {
-	var data = JSON.parse(msg.data);
-	const product = data.product_id;
-	const price = data.price
-	const side = data.side
-	const size = data.size
-	const usd = price * size
-	switch(data.type) {
-		case 'match':
-			switch(product) {
-				case 'BTC-USD':
-					console.log(`${price} ${side} ${data.size} $${usd}`)
-					break;
-			}
-			break;
-		case 'last_match':
-			console.log(`handle last match to set the last candle... ${price} ${side} ${data.size} $${usd}`)
-			break;
-	}
-}

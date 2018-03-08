@@ -37,6 +37,7 @@ import {
 } from "react-stockcharts/lib/indicator";
 import { fitWidth } from "react-stockcharts/lib/helper";
 import { last } from "react-stockcharts/lib/utils";
+import { Label } from "react-stockcharts/lib/annotation"
 
 class VolumeProfileChart extends React.Component {
 	render() {
@@ -73,11 +74,11 @@ class VolumeProfileChart extends React.Component {
 			.merge((d, c) => {d.bb = c;})
 			.accessor(d => d.bb);
 		const bbStroke = {
-			top: "#BBBBBB",
-			middle: "#888888",
-			bottom: "#BBBBBB",
+			top: "#BBBBBB77",
+			middle: "#88888877",
+			bottom: "#BBBBBB77",
 		};
-		const bbFill = "#4682B4";
+		const bbFill = "#4682B411";
 
 		// defaults
 		// const MACD = {
@@ -208,7 +209,7 @@ class VolumeProfileChart extends React.Component {
 
 					<BarSeries yAccessor={d => d.volume}
 						widthRatio={1}
-						opacity={0.4}
+						opacity={0.5}
 						fill={d => d.close > d.open ? "#6BA583" : "#FF0000"}
 						stroke={false}
 					/>
@@ -220,7 +221,9 @@ class VolumeProfileChart extends React.Component {
 				>
 					{<XAxis axisAt="top" orient="bottom" showTicks={false}/>}
 					{<XAxis axisAt="bottom" orient="top" ticks={5}/>}
-					<YAxis axisAt="right" orient="right" ticks={20} />
+					<YAxis axisAt="right" orient="right" ticks={10} />
+					<YAxis axisAt="right" orient="right" stroke='#000000' showTicks={false} />
+					<YAxis axisAt="left" orient="left" stroke='#000000' showTicks={false} />
 {					<MouseCoordinateX
 						at="bottom"
 						orient="top"
@@ -235,7 +238,7 @@ class VolumeProfileChart extends React.Component {
 						fill={bbFill} 
 					/>
 					<VolumeProfileSeries 
-						opacity={0.4} 
+						opacity={0.3}
 						bins={volumeProfileBins} 
 						orient='right' 
 						maxProfileWidthPercent={30}
@@ -252,7 +255,12 @@ class VolumeProfileChart extends React.Component {
 
 					<OHLCTooltip origin={[0, -10]} />
 
-					<p>{chartLabel}</p>
+					<Label 
+						y={15} 
+						x={5} 
+						text={chartLabel}
+						textAnchor='left'
+					/>
 					
 				</Chart>
 				<CrossHairCursor />

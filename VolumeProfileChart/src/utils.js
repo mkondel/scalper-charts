@@ -2,39 +2,48 @@ window.ws = new WebSocket("wss://ws-feed.gdax.com");
 var params = {"type": "subscribe","channels": [{"name": "matches","product_ids": ["BTC-USD",]}]}
 window.ws.onopen = () => window.ws.send(JSON.stringify(params))
 
-export const getInitialData = ({getState, stateUpdate}) =>
-	getData(60).then(a => stateUpdate({ a }, ()=>
-		getData(60*5).then(b => stateUpdate({ b }, ()=>
-			getData(60*15).then(c => stateUpdate({ c }, ()=>
-				getData(60*60).then(d => stateUpdate({ d }, ()=> {
+export const getInitialData = ({getState, stateUpdate, done}) =>{
+	const state = getState()
+	const possible = state.possibleIntervals
+	const chartLabels = state.chartLabels
+	return getData(possible[chartLabels.a]).then(a => stateUpdate({ a }, ()=>
+		getData(possible[chartLabels.b]).then(b => stateUpdate({ b }, ()=>
+			getData(possible[chartLabels.c]).then(c => stateUpdate({ c }, ()=>
+				getData(possible[chartLabels.d]).then(d => stateUpdate({ d }, ()=> {
 						console.log('initial data loaded')
 						enableLiveUpdates({getState, stateUpdate})
+						return done();
 					}
 				))
 			))
 		))
 	))
+}
 
 
 const enableLiveUpdates = ({getState, stateUpdate}) => {
 	const chartUpdateInterval = 500
 	const state = getState()
+	delete state.showModal
 	//put on  a timer
 	setInterval(
 		()=>{
 			// get the latest window size
 			const stateNow = getState()
-			state.width = stateNow.width
-			state.height = stateNow.height
-			stateUpdate(state)
+			Object.assign(stateNow, state)
+			stateUpdate(stateNow)
+			return null;
 		}, 
 		chartUpdateInterval
 	)
 	const addTrade = ({price, date, size}) => {
-		[	{pane:'a',interval: 60},
-			{pane:'b',interval: 60*5},
-			{pane:'c',interval: 60*15},
-			{pane:'d',interval: 60*60}
+		const possible = state.possibleIntervals;
+		const chartLabels = state.chartLabels;
+
+		[	{pane:'a',interval: possible[chartLabels.a]},
+			{pane:'b',interval: possible[chartLabels.b]},
+			{pane:'c',interval: possible[chartLabels.c]},
+			{pane:'d',interval: possible[chartLabels.d]}
 		].map(({pane, interval}) => {
 			const chart = state[pane]
 			if(chart){
@@ -59,7 +68,9 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 				chart[chart.length-1] = last
 				state[pane] = chart
 			}
+			return null;
 		})
+		return null;
 	}
 	window.ws.onmessage = (msg) => {
 		var data = JSON.parse(msg.data);
@@ -75,12 +86,17 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 						// console.log(`${price} ${side} ${size} $${usd}`)
 						addTrade({price, date, size})
 						break;
+					default:
+						break;
 				}
 				break;
 			case 'last_match':
 				console.log(`handle last match to set the last candle... ${price} ${date} ${data.size} $${usd}`)
 				break;
+			default:
+				break;
 		}
+		return null;
 	}
 }
 

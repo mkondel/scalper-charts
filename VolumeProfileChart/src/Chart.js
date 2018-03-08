@@ -27,7 +27,6 @@ import {
 	OHLCTooltip,
 	RSITooltip,
 	MACDTooltip,
-	SingleValueTooltip,
 } from 'react-stockcharts/lib/tooltip';
 import { 
 	change, 
@@ -38,6 +37,7 @@ import {
 import { fitWidth } from 'react-stockcharts/lib/helper';
 import { last } from 'react-stockcharts/lib/utils';
 import { Label } from 'react-stockcharts/lib/annotation'
+import { ClickCallback } from 'react-stockcharts/lib/interactive'
 
 class VolumeProfileChart extends React.Component {
 	render() {
@@ -51,7 +51,10 @@ class VolumeProfileChart extends React.Component {
 			height,
 			maxCandles,
 			volumeProfileBins,
-			chartLabel
+			chartLabel,
+			leftClick,
+			rightClick,
+			doubleClick,
 		 } = this.props;
 
 		const candleOffset = 3
@@ -132,6 +135,20 @@ class VolumeProfileChart extends React.Component {
 		// const end = xAccessor(data[Math.max(0, data.length - 150)]);
 		const end = xAccessor(data[Math.max(0, data.length - maxCandles)]);
 		const xExtents = [start+candleOffset, end];
+
+
+		// cancel all orders and all products on RMB click
+		const rightMouseClick = (moreProps, e) => rightClick()
+		// add an order at current mouse hover price
+		const leftMouseClick = (moreProps, e) => {
+			// const price = parseFloat(moreProps.chartConfig.yScale.invert(moreProps.mouseXY[1])).toFixed(2)
+			leftClick()
+		}
+		// add an order at close of clicked candle
+		const leftMouseDoubleClick = (moreProps, e) => {
+			// const price = parseFloat(moreProps.currentItem.close).toFixed(2)
+			doubleClick()
+		}
 
 		return (
 			<ChartCanvas height={height}
@@ -270,6 +287,14 @@ class VolumeProfileChart extends React.Component {
 						x={5} 
 						text={chartLabel}
 						textAnchor='left'
+					/>
+
+					<ClickCallback
+						// left mouse button
+						onClick={ leftMouseClick }
+						// right mouse button
+						onContextMenu={ rightMouseClick }
+						onDoubleClick={ leftMouseDoubleClick }
 					/>
 					
 				</Chart>

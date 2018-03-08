@@ -7,7 +7,7 @@ import { getInitialData } from "./utils"
 // scale charts page to only be a part of the full window, 1 means no scaling
 const heightFactor = 1
 const widthFactor = 1
-const maxCandles = 100
+const maxCandles = 60
 
 class ChartComponent extends React.Component {
 	// handles window size changes

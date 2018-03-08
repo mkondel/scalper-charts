@@ -216,7 +216,7 @@ class VolumeProfileChart extends React.Component {
 				</Chart>
 				<Chart id={1}
 					yExtents={[d => [d.high , d.low ]]}
-					padding={{ top: 20, bottom: 20 }}
+					padding={{ top: 20, bottom: 30 }}
 					height={mainChartHeight}
 				>
 					{<XAxis axisAt="top" orient="bottom" showTicks={false}/>}

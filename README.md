@@ -11,11 +11,11 @@ scalper-charts helps traders make educated decisions fast. The typical use-case 
 # <a name="goals"></a>Goals
 - ~4 pane window with 2x2 charts~
 - ~Volume profile, MACD, RSI~
-- Live candle updates via WebSockets
-- Save all settings and chart tools
+- ~Live candle updates via WebSockets~
 - Each chart can toggle:
  -- Time interval: 1min, 5min, 15min, 30min, 1hr, 4hr, 1day, 1week
  -- Indicators: BB, volume profile, RSI, MACD
+- Save all settings and chart tools
 - Allow fibs and trendlines
 
 # <a name="how"></a>How to run
@@ -29,10 +29,10 @@ yarn && yarn start
 
 ```
 |========|========|
-|   1m   |   1h   |
+|   1m   |   5m   |
 |        |        |
 |========|========|
-|   15m  |   1d   |
+|   15m  |   1h   |
 |        |        |
 |========|========|
 ```

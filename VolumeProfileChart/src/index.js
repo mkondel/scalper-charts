@@ -3,7 +3,7 @@ import FA from 'react-fontawesome';
 import { render } from 'react-dom';
 import Chart from './Chart';
 import { getInitialData } from "./utils"
-import ReactModal from 'react-modal';
+import { Modal, Button } from 'react-bootstrap'
 
 // scale charts page to only be a part of the full window, 1 means no scaling
 const heightFactor = 1
@@ -68,12 +68,12 @@ class ChartComponent extends React.Component {
         window.removeEventListener("resize", this.updateDimensions.bind(this));
     }
     componentDidMount() {
+        // enable window size changes to redraw the charts
+        window.addEventListener("resize", this.updateDimensions.bind(this));
         // loads initial candle data from gdax over a simple GET API 
         getInitialData({getState: this.getState.bind(this), stateUpdate: this.setState.bind(this), done: ()=>{
 	        // update the charts for the 1st time
 	        this.updateDimensions();
-	        // enable window size changes to redraw the charts
-	        window.addEventListener("resize", this.updateDimensions.bind(this));
         }})
     }
     getState(){
@@ -84,19 +84,22 @@ class ChartComponent extends React.Component {
             return <FA name="cog" spin size='5x' />
         }
 
-        return <div>
-			<button onClick={this.handleOpenModal}>Trigger Modal</button>
-			<ReactModal 
-				isOpen={this.state.showModal}
-				contentLabel="onRequestClose Example"
-				onRequestClose={this.handleCloseModal}
-				className="Modal"
-				overlayClassName="Overlay"
-				ariaHideApp={false}
-			>
-				<p>Modal text!</p>
-				<button onClick={this.handleCloseModal}>Close Modal</button>
-			</ReactModal>
+        return this.state.showModal ? 
+    		<Modal show={this.state.showModal} onHide={this.handleCloseModal}>
+			  <Modal.Header closeButton>
+			    <Modal.Title>Modal heading</Modal.Title>
+			  </Modal.Header>
+			  <Modal.Body>
+			    <h4>Text in a modal</h4>
+			  </Modal.Body>
+			  <Modal.Footer>
+			    <Button onClick={this.handleCloseModal}>Close</Button>
+			  </Modal.Footer>
+			</Modal>
+         : <div>
+			<Button className='top-button' onClick={this.handleOpenModal}>Trigger Modal</Button>
+    		{/*<div className={this.state.showModal ? 'modal' : null} />*/}
+
             <div className='panes'>
     {this.state.a?
                 <Chart 

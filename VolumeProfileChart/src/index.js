@@ -45,6 +45,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={maxCandles}
 					volumeProfileBins={24}
+					chartLabel='1min'
 				/> : <span><FA name="cog" spin size='5x' /> 1min candles</span>}
 	{this.state.b?
 				<Chart 
@@ -54,6 +55,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={maxCandles}
 					volumeProfileBins={24}
+					chartLabel='5min'
 				/>: <span><FA name="cog" spin size='5x' /> 5min candles</span>}
 			</div>
 			<div className='panes'>
@@ -65,6 +67,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={maxCandles}
 					volumeProfileBins={24}
+					chartLabel='15min'
 				/>: <span><FA name="cog" spin size='5x' /> 15min candles</span>}
 	{this.state.d?
 				<Chart 
@@ -74,6 +77,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={maxCandles}
 					volumeProfileBins={24}
+					chartLabel='1hr'
 				/>: <span><FA name="cog" spin size='5x' /> 1hr candles</span>}
 			</div>
 		</div>

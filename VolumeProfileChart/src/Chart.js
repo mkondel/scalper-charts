@@ -27,6 +27,7 @@ import {
 	OHLCTooltip,
 	RSITooltip,
 	MACDTooltip,
+	SingleValueTooltip,
 } from "react-stockcharts/lib/tooltip";
 import { 
 	change, 
@@ -42,7 +43,7 @@ class VolumeProfileChart extends React.Component {
 
 		const changeCalculator = change();
 
-		const { type, data: initialData, width, ratio, height, maxCandles, volumeProfileBins } = this.props;
+		const { type, data: initialData, width, ratio, height, maxCandles, volumeProfileBins, chartLabel } = this.props;
 
 		const candleOffset = 3
 
@@ -206,9 +207,10 @@ class VolumeProfileChart extends React.Component {
 						displayFormat={format(".4s")} />
 
 					<BarSeries yAccessor={d => d.volume}
-						widthRatio={0.7}
-						opacity={1}
+						widthRatio={1}
+						opacity={0.4}
 						fill={d => d.close > d.open ? "#6BA583" : "#FF0000"}
+						stroke={false}
 					/>
 				</Chart>
 				<Chart id={1}
@@ -216,7 +218,8 @@ class VolumeProfileChart extends React.Component {
 					padding={{ top: 30, bottom: 0 }}
 					height={mainChartHeight}
 				>
-					{<XAxis axisAt="bottom" orient="bottom"/>}
+					{<XAxis axisAt="top" orient="bottom" showTicks={false}/>}
+					{<XAxis axisAt="bottom" orient="top" ticks={5}/>}
 					<YAxis axisAt="right" orient="right" ticks={20} />
 {					<MouseCoordinateX
 						at="bottom"
@@ -232,20 +235,25 @@ class VolumeProfileChart extends React.Component {
 						fill={bbFill} 
 					/>
 					<VolumeProfileSeries 
-						opacity={0.3} 
+						opacity={0.4} 
 						bins={volumeProfileBins} 
 						orient='right' 
-						maxProfileWidthPercent={25}
+						maxProfileWidthPercent={30}
+						stroke='#00000000'
 					/>
 					<CandlestickSeries 
 						opacity={1} 
+						wickStroke='#000000'
+						stroke="#000000"
+						// fill={d => d.close > d.open ? "#00FF99" : "#FF0000"}
 					/>
 					<EdgeIndicator itemType="last" orient="right" edgeAt="right"
 						yAccessor={d => d.close} fill={d => d.close > d.open ? "#6BA583" : "#FF0000"}/>
 
-					<OHLCTooltip origin={[0, 0]} />
+					<OHLCTooltip origin={[0, -10]} />
 
-
+					<p>{chartLabel}</p>
+					
 				</Chart>
 				<CrossHairCursor />
 			</ChartCanvas>

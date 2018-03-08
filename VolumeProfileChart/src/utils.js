@@ -26,7 +26,6 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 			const state = getState()
 			const chart = state[pane]
 			if(chart){
-				const first = chart[0]
 				let last = chart[chart.length-1]
 				// new candle
 				if(new Date() - last.date > interval*1000){

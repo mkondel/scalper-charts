@@ -1,33 +1,14 @@
-// import { tsvParse, csvParse } from  "d3-dsv";
-// import { timeParse } from "d3-time-format";
-// function parseData(parse) {
-// 	return function(d) {
-// 		d.date = parse(d.date);
-// 		d.open = +d.open;
-// 		d.high = +d.high;
-// 		d.low = +d.low;
-// 		d.close = +d.close;
-// 		d.volume = +d.volume;
-
-// 		return d;
-// 	};
-// }
-// const parseDate = timeParse("%Y-%m-%d");
-
+window.ws = new WebSocket("wss://ws-feed.gdax.com");
+var params = {"type": "subscribe","channels": [{"name": "matches","product_ids": ["BTC-USD",]}]}
+window.ws.onopen = () => window.ws.send(JSON.stringify(params))
 
 export function getData(span=60) {
-
 	// return getHistoricalCandles(60*60*24, 'BTC-USD')
 	// return getHistoricalCandles(60*60, 'BTC-USD')
 	// return getHistoricalCandles(60*15, 'BTC-USD')
 	// return getHistoricalCandles(60*5, 'BTC-USD')
 	// console.log(`span is ${span}`)
 	return getHistoricalCandles(span, 'BTC-USD')
-
-	// const promiseMSFT = fetch("//rrag.github.io/react-stockcharts/data/MSFT.tsv")
-	// 	.then(response => response.text())
-	// 	.then(data => tsvParse(data, parseData(parseDate)))
-	// return promiseMSFT;
 }
 
 
@@ -46,9 +27,6 @@ const parseDataArray = ({candle, product}) => ({
 // pulls historical candles form GDAX for a given granularity
 export function getHistoricalCandles(granularity, product){
 	const url = `https://api.gdax.com/products/${product}/candles?granularity=${granularity}`;
-	// const url = '//rrag.github.io/react-stockcharts/data/MSFT.tsv'
-	// console.log(new Date(), url)
-	// return Promise.resolve([1,2,3,4,5])
 	return fetch(url)
 	.then(res=>res.json())
 	.then(json=>{
@@ -60,4 +38,25 @@ export function getHistoricalCandles(granularity, product){
 		}
 	})
 	.then(candles=>candles ? candles.reverse().map(candle=>parseDataArray({candle, product})) : null)
+}
+
+window.ws.onmessage = (msg) => {
+	var data = JSON.parse(msg.data);
+	const product = data.product_id;
+	const price = data.price
+	const side = data.side
+	const size = data.size
+	const usd = price * size
+	switch(data.type) {
+		case 'match':
+			switch(product) {
+				case 'BTC-USD':
+					console.log(`${price} ${side} ${data.size} $${usd}`)
+					break;
+			}
+			break;
+		case 'last_match':
+			console.log(`handle last match to set the last candle... ${price} ${side} ${data.size} $${usd}`)
+			break;
+	}
 }

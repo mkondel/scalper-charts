@@ -54,7 +54,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={maxCandles}
 					volumeProfileBins={24}
-				/>: <span><FA name="cog" spin size='5x' /> 15min candles</span>}
+				/>: <span><FA name="cog" spin size='5x' /> 5min candles</span>}
 			</div>
 			<div className='panes'>
 	{this.state.c?
@@ -65,7 +65,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={maxCandles}
 					volumeProfileBins={24}
-				/>: <span><FA name="cog" spin size='5x' /> 1hr candles</span>}
+				/>: <span><FA name="cog" spin size='5x' /> 15min candles</span>}
 	{this.state.d?
 				<Chart 
 					type='hybrid'
@@ -74,7 +74,7 @@ class ChartComponent extends React.Component {
 					width={this.state.width/2}
 					maxCandles={maxCandles}
 					volumeProfileBins={24}
-				/>: <span><FA name="cog" spin size='5x' /> 1day candles</span>}
+				/>: <span><FA name="cog" spin size='5x' /> 1hr candles</span>}
 			</div>
 		</div>
 	}

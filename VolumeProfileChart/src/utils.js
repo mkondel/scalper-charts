@@ -4,9 +4,9 @@ window.ws.onopen = () => window.ws.send(JSON.stringify(params))
 
 export const getInitialData = ({getState, stateUpdate}) =>
 	getData(60).then(a => stateUpdate({ a }, ()=>
-		getData(60*60).then(b => stateUpdate({ b }, ()=>
-			getData(60*15).then(c => stateUpdate({ c }, ()=>
-				getData(60*60*24).then(d => stateUpdate({ d }, ()=> {
+		getData(60*15).then(b => stateUpdate({ b }, ()=>
+			getData(60*5).then(c => stateUpdate({ c }, ()=>
+				getData(60*60).then(d => stateUpdate({ d }, ()=> {
 						console.log('initial data loaded')
 						enableLiveUpdates({getState, stateUpdate})
 					}
@@ -18,21 +18,37 @@ export const getInitialData = ({getState, stateUpdate}) =>
 
 const enableLiveUpdates = ({getState, stateUpdate}) => {
 	const addTrade = ({price, date, size}) => {
-		console.log(`i am the trade `);
-		// console.log(`i am the trade ${price} ${side} ${size}`)
-		['a','b','c','d'].map(pane => {
+		[	{pane:'a',interval: 60},
+			{pane:'b',interval: 60*15},
+			{pane:'c',interval: 60*5},
+			{pane:'d',interval: 60*60}
+		].map(({pane, interval}) => {
 			const state = getState()
 			const chart = state[pane]
-			const first = chart[0]
-			const last = chart[chart.length-1]
-			// console.log(`${pane} ${first.date} ${last.date}`)
-
-			
-			last.close = price
-			last.volume += size
-			// console.log(`${pane} ${last.close} ${last.volume}`)
-			chart[chart.length-1] = last
-			stateUpdate({[pane]: chart})
+			if(chart){
+				const first = chart[0]
+				let last = chart[chart.length-1]
+				// new candle
+				if(new Date() - last.date > interval*1000){
+					const newCandleDate = new Date(last.date.getTime() + interval*1000)
+					// add a new candle to the chart
+					chart.push({
+						date: newCandleDate,
+						open: price,
+						high: price,
+						low: price,
+						close: price,
+						volume: 0,
+					})
+					last = chart[chart.length-1]
+				}
+				
+				last.close = price
+				last.volume += size
+				// console.log(`${pane} ${last.close} ${last.volume}`)
+				chart[chart.length-1] = last
+				stateUpdate({[pane]: chart})
+			}
 		})
 	}
 	window.ws.onmessage = (msg) => {

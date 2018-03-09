@@ -282,13 +282,13 @@ class VolumeProfileChart extends React.Component {
 
 					<OHLCTooltip origin={[0, -10]} />
 
+
 					<Label 
 						y={15} 
 						x={5} 
 						text={chartLabel}
 						textAnchor='left'
 					/>
-
 					<ClickCallback
 						// left mouse button
 						onClick={ leftMouseClick }

@@ -26,7 +26,7 @@ class ChartComponent extends React.Component {
                 'a': '1min',
                 'b': '5min',
                 'c': '15min',
-                'd': '1hr',
+                'd': '1min',
             },
             volumeProfileBins: {
                 'a': 24,
@@ -40,7 +40,9 @@ class ChartComponent extends React.Component {
                 'c': 60,
                 'd': 60,
             },
-            showModal: false
+            showModal: false,
+            showCharts: 'hide',
+            cog: true,
         };
     
         this.handleOpenModal = this.handleOpenModal.bind(this);
@@ -63,104 +65,112 @@ class ChartComponent extends React.Component {
         // save the w and h to state
         this.setState({ height, width });
     }
+    // remove the listeners
     componentWillUnmount() {
-        // remove the listener that handles window size changes
         window.removeEventListener("resize", this.updateDimensions.bind(this));
+        window.removeEventListener("keyup", this.updateDimensions.bind(this));
     }
     componentDidMount() {
         // enable window size changes to redraw the charts
         window.addEventListener("resize", this.updateDimensions.bind(this));
+        
+        // handle keyboard shortcuts
+        window.addEventListener("keyup", this.onKeyUp.bind(this));
+
         // loads initial candle data from gdax over a simple GET API 
-        getInitialData({getState: this.getState.bind(this), stateUpdate: this.setState.bind(this), done: ()=>{
+        getInitialData({getState: this.getState.bind(this), stateUpdate: this.setState.bind(this), done: cb=>{
 	        // update the charts for the 1st time
-	        this.updateDimensions();
+	        this.setState({showCharts:'show', cog: false}, ()=>this.updateDimensions());
+
+	        // start live data
+	        cb({getState: this.getState.bind(this), stateUpdate: this.setState.bind(this)});
         }})
     }
     getState(){
     	return this.state;
     }
+    onKeyUp(event){
+	    switch(event.keyCode){
+	    	case 13: 	// ENTER key
+	    		break;
+	    	case 32: 	// SPACE key
+	    		this.handleOpenModal()
+	    		break;
+	    	default:
+	    		// alert(event.keyCode);
+	    		break;
+	    }
+	}
+
     render() {
-        if (this.state == null) {
-            return <FA name="cog" spin size='5x' />
-        }
-
         return this.state.showModal ? 
-    		<Modal show={this.state.showModal} onHide={this.handleCloseModal}>
-			  <Modal.Header closeButton>
-			    <Modal.Title>Modal heading</Modal.Title>
-			  </Modal.Header>
-			  <Modal.Body>
-			    <h4>Text in a modal</h4>
-			  </Modal.Body>
-			  <Modal.Footer>
-			    <Button onClick={this.handleCloseModal}>Close</Button>
-			  </Modal.Footer>
-			</Modal>
-         : <div>
-			<Button className='top-button' onClick={this.handleOpenModal}>Trigger Modal</Button>
-    		{/*<div className={this.state.showModal ? 'modal' : null} />*/}
-
-            <div className='panes'>
-    {this.state.a?
-                <Chart 
-                    type='hybrid'
-                    data={this.state.a} 
-                    height={this.state.height/2}
-                    width={this.state.width/2}
-                    maxCandles={this.state.maxCandles.a}
-                    volumeProfileBins={this.state.volumeProfileBins.a}
-                    chartLabel={this.state.chartLabels.a}
-                    leftClick={()=>this.leftClick.bind(this)}
-                    rightClick={()=>this.rightClick.bind(this)}
-                    doubleClick={()=>this.doubleClick.bind(this)}
-                    candleSize={this.state.possibleIntervals[this.state.chartLabels.a]}
-                /> : <span><FA name="cog" spin size='5x' /> {this.state.chartLabels.a} candles</span>}
-    {this.state.b?
-                <Chart 
-                    type='hybrid'
-                    data={this.state.b} 
-                    height={this.state.height/2}
-                    width={this.state.width/2}
-                    maxCandles={this.state.maxCandles.b}
-                    volumeProfileBins={this.state.volumeProfileBins.b}
-                    chartLabel={this.state.chartLabels.b}
-                    leftClick={()=>this.leftClick.bind(this)}
-                    rightClick={()=>this.rightClick.bind(this)}
-                    doubleClick={()=>this.doubleClick.bind(this)}
-                    candleSize={this.state.possibleIntervals[this.state.chartLabels.b]}
-                />: <span><FA name="cog" spin size='5x' /> {this.state.chartLabels.b} candles</span>}
-            </div>
-            <div className='panes'>
-    {this.state.c?
-                <Chart 
-                    type='hybrid'
-                    data={this.state.c} 
-                    height={this.state.height/2}
-                    width={this.state.width/2}
-                    maxCandles={this.state.maxCandles.c}
-                    volumeProfileBins={this.state.volumeProfileBins.c}
-                    chartLabel={this.state.chartLabels.c}
-                    leftClick={()=>this.leftClick.bind(this)}
-                    rightClick={()=>this.rightClick.bind(this)}
-                    doubleClick={()=>this.doubleClick.bind(this)}
-                    candleSize={this.state.possibleIntervals[this.state.chartLabels.c]}
-                />: <span><FA name="cog" spin size='5x' /> {this.state.chartLabels.c} candles</span>}
-    {this.state.d?
-                <Chart 
-                    type='hybrid'
-                    data={this.state.d} 
-                    height={this.state.height/2}
-                    width={this.state.width/2}
-                    maxCandles={this.state.maxCandles.d}
-                    volumeProfileBins={this.state.volumeProfileBins.d}
-                    chartLabel={this.state.chartLabels.d}
-                    leftClick={()=>this.leftClick.bind(this)}
-                    rightClick={()=>this.rightClick.bind(this)}
-                    doubleClick={()=>this.doubleClick.bind(this)}
-                    candleSize={this.state.possibleIntervals[this.state.chartLabels.d]}
-                />: <span><FA name="cog" spin size='5x' /> {this.state.chartLabels.d} candles</span>}
-            </div>
-        </div>
+        	<MoDaL handleCloseModal={this.handleCloseModal.bind(this)}/>
+		:
+		<div>
+			{this.state.cog ? <FA name="cog" spin size='5x' /> : null}
+	        <div className={`charts ${this.state.showCharts}`}>
+	            <div className='panes'>
+		    		{this.state.a?
+		                <Chart 
+		                    type='hybrid'
+		                    data={this.state.a} 
+		                    height={this.state.height/2}
+		                    width={this.state.width/2}
+		                    maxCandles={this.state.maxCandles.a}
+		                    volumeProfileBins={this.state.volumeProfileBins.a}
+		                    chartLabel={this.state.chartLabels.a}
+		                    leftClick={()=>this.leftClick.bind(this)}
+		                    rightClick={()=>this.rightClick.bind(this)}
+		                    doubleClick={()=>this.doubleClick.bind(this)}
+		                    candleSize={this.state.possibleIntervals[this.state.chartLabels.a]}
+		                /> : <div>{`Loading ${this.state.chartLabels.a}`} <FA name='cog' spin size='5x'/></div>}
+		    		{this.state.b?
+		                <Chart 
+		                    type='hybrid'
+		                    data={this.state.b} 
+		                    height={this.state.height/2}
+		                    width={this.state.width/2}
+		                    maxCandles={this.state.maxCandles.b}
+		                    volumeProfileBins={this.state.volumeProfileBins.b}
+		                    chartLabel={this.state.chartLabels.b}
+		                    leftClick={()=>this.leftClick.bind(this)}
+		                    rightClick={()=>this.rightClick.bind(this)}
+		                    doubleClick={()=>this.doubleClick.bind(this)}
+		                    candleSize={this.state.possibleIntervals[this.state.chartLabels.b]}
+		                />: <div>{`Loading ${this.state.chartLabels.b}`} <FA name='cog' spin size='5x'/></div>}
+	            </div>
+	            <div className='panes'>
+		    		{this.state.c?
+		                <Chart 
+		                    type='hybrid'
+		                    data={this.state.c} 
+		                    height={this.state.height/2}
+		                    width={this.state.width/2}
+		                    maxCandles={this.state.maxCandles.c}
+		                    volumeProfileBins={this.state.volumeProfileBins.c}
+		                    chartLabel={this.state.chartLabels.c}
+		                    leftClick={()=>this.leftClick.bind(this)}
+		                    rightClick={()=>this.rightClick.bind(this)}
+		                    doubleClick={()=>this.doubleClick.bind(this)}
+		                    candleSize={this.state.possibleIntervals[this.state.chartLabels.c]}
+		                />: <div>{`Loading ${this.state.chartLabels.c}`} <FA name='cog' spin size='5x'/></div>}
+		    		{this.state.d?
+		                <Chart 
+		                    type='hybrid'
+		                    data={this.state.d} 
+		                    height={this.state.height/2}
+		                    width={this.state.width/2}
+		                    maxCandles={this.state.maxCandles.d}
+		                    volumeProfileBins={this.state.volumeProfileBins.d}
+		                    chartLabel={this.state.chartLabels.d}
+		                    leftClick={()=>this.leftClick.bind(this)}
+		                    rightClick={()=>this.rightClick.bind(this)}
+		                    doubleClick={()=>this.doubleClick.bind(this)}
+		                    candleSize={this.state.possibleIntervals[this.state.chartLabels.d]}
+		                />: <div>{`Loading ${this.state.chartLabels.d}`} <FA name='cog' spin size='5x'/></div>}
+	            </div>
+	        </div>
+		</div>
     }
 }
 
@@ -168,3 +178,23 @@ render(
     <ChartComponent />,
     document.getElementById("root")
 );
+
+
+const MoDaL = ({handleCloseModal}) => 
+	<div className="static-modal">
+	  <Modal.Dialog 
+	  	onHide={handleCloseModal}
+	  	keyboard={true}
+	  	autoFocus={true}
+	  >
+		  <Modal.Header>
+		        <Modal.Title>Modal title</Modal.Title>
+		    </Modal.Header>
+
+		    <Modal.Body>One fine body...</Modal.Body>
+
+			<Modal.Footer>
+			    <Button onClick={handleCloseModal}>Close</Button>
+			</Modal.Footer>
+		</Modal.Dialog>
+	</div>

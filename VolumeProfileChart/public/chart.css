@@ -14,7 +14,7 @@
     /*border: 1px solid black;*/
 }
 
-/*.modal {
+.modal {
     background: black;
     height: 100%;
     width: 100%;
@@ -24,4 +24,11 @@
 .top-button {
     position: absolute;
     z-index: 100;
-}*/
+}
+
+.hide {
+    display: none;
+}
+.show {
+    display: inherit;
+}

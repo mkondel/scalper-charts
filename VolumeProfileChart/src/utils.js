@@ -6,18 +6,24 @@ export const getInitialData = ({getState, stateUpdate, done}) =>{
 	const state = getState()
 	const possible = state.possibleIntervals
 	const chartLabels = state.chartLabels
-	return getData(possible[chartLabels.a]).then(a => stateUpdate({ a }, ()=>
-		getData(possible[chartLabels.b]).then(b => stateUpdate({ b }, ()=>
-			getData(possible[chartLabels.c]).then(c => stateUpdate({ c }, ()=>
-				getData(possible[chartLabels.d]).then(d => stateUpdate({ d }, ()=> {
-						console.log('initial data loaded')
-						enableLiveUpdates({getState, stateUpdate})
-						return done();
-					}
-				))
-			))
-		))
-	))
+
+	getData(possible[chartLabels.a]).then(a => {
+		console.log(`${chartLabels.a} loaded`)
+		getData(possible[chartLabels.b]).then(b => {
+			console.log(`${chartLabels.b} loaded`)
+			getData(possible[chartLabels.c]).then(c => {
+				console.log(`${chartLabels.c} loaded`)
+				getData(possible[chartLabels.d]).then(d => {
+					console.log(`${chartLabels.d} loaded`)
+					stateUpdate({ a,b,c,d }, () => {
+						console.log('initial data loaded');
+						console.dir(d)
+						done(enableLiveUpdates);
+					})
+				})
+			})
+		})
+	})
 }
 
 
@@ -25,6 +31,8 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 	const chartUpdateInterval = 500
 	const state = getState()
 	delete state.showModal
+	delete state.showCharts
+	delete state.cog
 	//put on  a timer
 	setInterval(
 		()=>{

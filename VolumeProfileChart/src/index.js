@@ -106,7 +106,7 @@ class ChartComponent extends React.Component {
         return this.state.showModal ? 
         	<MoDaL handleCloseModal={this.handleCloseModal.bind(this)}/>
 		:
-		<div className={`mainDiv ${this.state.cog ? 'pad-it':null}`}>
+		<div className={`mainDiv ${this.state.cog ? 'pad-it':null}`} autoFocus>
 			{this.state.cog ? <FA name="cog" spin size='5x' /> : null}
 	        <div className={`charts ${this.state.showCharts}`}>
 	            <div className='panes'>
@@ -187,12 +187,12 @@ const MoDaL = ({handleCloseModal}) =>
 	  	keyboard={true}
 	  	autoFocus={true}
 	  >
-		  <Modal.Header>
-		        <Modal.Title>Modal title</Modal.Title>
+            <Modal.Header>
+		        <Modal.Title className='text-align-center'>Settings</Modal.Title>
 		    </Modal.Header>
-
-		    <Modal.Body>One fine body...</Modal.Body>
-
+		    <Modal.Body className='text-align-center'>
+		    	<img src='http://s3.amazonaws.com/lamborambo/200.gif?v=1'/>
+		    </Modal.Body>
 			<Modal.Footer>
 			    <Button onClick={handleCloseModal}>Close</Button>
 			</Modal.Footer>

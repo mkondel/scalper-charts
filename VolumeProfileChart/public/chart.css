@@ -34,3 +34,9 @@
 .pad-it{
     padding: 20% 50% 0 50%;
 }
+.text-align-center{
+    text-align: center;
+}
+.static-modal {
+    color: black;
+}

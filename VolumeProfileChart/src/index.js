@@ -12,7 +12,7 @@ const widthFactor = 1
 
 class ChartComponent extends React.Component {
     constructor(){
-        super()
+        super();
         this.state = {
             possibleIntervals: {
                 '1min': 60,
@@ -27,6 +27,7 @@ class ChartComponent extends React.Component {
                 'b': '15min',
                 'c': '1hr',
                 'd': '6hr',
+                candles: false,
             },
             volumeProfileBins: {
                 'a': 24,
@@ -70,7 +71,20 @@ class ChartComponent extends React.Component {
         window.removeEventListener("resize", this.updateDimensions.bind(this));
         window.removeEventListener("keyup", this.updateDimensions.bind(this));
     }
+    favicon(){
+        const faviconPath = `/favicons`;
+        const availableFavicons = ['favicon_0', 'favicon_1', 'favicon_2'];
+        const randomIndex = Math.floor(Math.random() * availableFavicons.length);
+        const randomNumber = Math.floor(Math.random());
+        const faviconName = availableFavicons[randomIndex];
+        
+        const fav = document.getElementById('favicon');
+        fav.href = `${faviconPath}/${faviconName}.ico?v=${randomNumber}`;
+    }
     componentDidMount() {
+        // pick a random favicon 
+        this.favicon();
+
         // enable window size changes to redraw the charts
         window.addEventListener("resize", this.updateDimensions.bind(this));
         
@@ -106,7 +120,7 @@ class ChartComponent extends React.Component {
         return this.state.showModal ? 
         	<MoDaL handleCloseModal={this.handleCloseModal.bind(this)}/>
 		:
-		<div className={`mainDiv ${this.state.cog ? 'pad-it':null}`} autoFocus>
+		<div className={`mainDiv ${this.state.cog ? 'pad-it':null}`} >
 			{this.state.cog ? <FA name="cog" spin size='5x' /> : null}
 	        <div className={`charts ${this.state.showCharts}`}>
 	            <div className='panes'>
@@ -116,7 +130,8 @@ class ChartComponent extends React.Component {
 		                    data={this.state.a} 
 		                    height={this.state.height/2}
 		                    width={this.state.width/2}
-		                    maxCandles={this.state.maxCandles.a}
+		                    maxCandles={this.state.chartLabels.candles ? 
+                                this.state.chartLabels.candles : this.state.maxCandles.a}
 		                    volumeProfileBins={this.state.volumeProfileBins.a}
 		                    chartLabel={this.state.chartLabels.a}
 		                    leftClick={()=>this.leftClick.bind(this)}
@@ -130,7 +145,8 @@ class ChartComponent extends React.Component {
 		                    data={this.state.b} 
 		                    height={this.state.height/2}
 		                    width={this.state.width/2}
-		                    maxCandles={this.state.maxCandles.b}
+		                    maxCandles={this.state.chartLabels.candles ? 
+                                this.state.chartLabels.candles : this.state.maxCandles.b}
 		                    volumeProfileBins={this.state.volumeProfileBins.b}
 		                    chartLabel={this.state.chartLabels.b}
 		                    leftClick={()=>this.leftClick.bind(this)}
@@ -146,7 +162,8 @@ class ChartComponent extends React.Component {
 		                    data={this.state.c} 
 		                    height={this.state.height/2}
 		                    width={this.state.width/2}
-		                    maxCandles={this.state.maxCandles.c}
+		                    maxCandles={this.state.chartLabels.candles ? 
+                                this.state.chartLabels.candles : this.state.maxCandles.c}
 		                    volumeProfileBins={this.state.volumeProfileBins.c}
 		                    chartLabel={this.state.chartLabels.c}
 		                    leftClick={()=>this.leftClick.bind(this)}
@@ -160,7 +177,8 @@ class ChartComponent extends React.Component {
 		                    data={this.state.d} 
 		                    height={this.state.height/2}
 		                    width={this.state.width/2}
-		                    maxCandles={this.state.maxCandles.d}
+		                    maxCandles={this.state.chartLabels.candles ? 
+                                this.state.chartLabels.candles : this.state.maxCandles.d}
 		                    volumeProfileBins={this.state.volumeProfileBins.d}
 		                    chartLabel={this.state.chartLabels.d}
 		                    leftClick={()=>this.leftClick.bind(this)}
@@ -175,7 +193,7 @@ class ChartComponent extends React.Component {
 }
 
 render(
-    <ChartComponent />,
+    <ChartComponent autoFocus/>,
     document.getElementById("root")
 );
 
@@ -191,7 +209,7 @@ const MoDaL = ({handleCloseModal}) =>
 		        <Modal.Title className='text-align-center'>Settings</Modal.Title>
 		    </Modal.Header>
 		    <Modal.Body className='text-align-center'>
-		    	<img src='http://s3.amazonaws.com/lamborambo/200.gif?v=1'/>
+		    	<img alt='poop' src='http://s3.amazonaws.com/lamborambo/200.gif?v=1337'/>
 		    </Modal.Body>
 			<Modal.Footer>
 			    <Button onClick={handleCloseModal}>Close</Button>

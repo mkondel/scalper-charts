@@ -3,44 +3,54 @@ var params = {"type": "subscribe","channels": [{"name": "matches","product_ids":
 window.ws.onopen = () => window.ws.send(JSON.stringify(params))
 
 const rateTimeout = 500;
+const chartUpdateInterval = 300;
+
+function getUrlVars() {
+	var vars = {};
+	window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+		vars[key] = value;
+	});
+	return vars;
+}
 
 export const getInitialData = ({getState, stateUpdate, done}) =>{
-	const state = getState();
-	const possible = state.possibleIntervals;
-	const chartLabels = state.chartLabels;
+	// read url params and set the chart intervals
+	const chartLabels = getUrlVars();
+	const haveParams = Object.keys(chartLabels).length>0
+	// update state with the user params
+	stateUpdate({chartLabels: haveParams ? chartLabels : getState().chartLabels},()=>{
+		const state = getState();
+		const possible = state.possibleIntervals;
+		const chartLabels = state.chartLabels;
 
-	getData(possible[chartLabels.a]).then(a => {
-		console.log(`${chartLabels.a} loaded`);
-
-		setTimeout(()=>{
-			getData(possible[chartLabels.b]).then(b => {
-				console.log(`${chartLabels.b} loaded`);
-
-				setTimeout(()=>{
-					getData(possible[chartLabels.c]).then(c => {
-						console.log(`${chartLabels.c} loaded`);
-
-						setTimeout(()=>{
-							getData(possible[chartLabels.d]).then(d => {
-								console.log(`${chartLabels.d} loaded`);
-
-								stateUpdate({ a,b,c,d }, () => {
-									console.log('initial data loaded');
-									// console.dir(d)
-									done(enableLiveUpdates);
+		getData(possible[chartLabels.a]).then(a => {
+			// console.log(`${chartLabels.a} loaded`);
+			setTimeout(()=>{
+				getData(possible[chartLabels.b]).then(b => {
+					// console.log(`${chartLabels.b} loaded`);
+					setTimeout(()=>{
+						getData(possible[chartLabels.c]).then(c => {
+							// console.log(`${chartLabels.c} loaded`);
+							setTimeout(()=>{
+								getData(possible[chartLabels.d]).then(d => {
+									// console.log(`${chartLabels.d} loaded`);
+									stateUpdate({ a,b,c,d }, () => {
+										console.log('initial data loaded');
+										// console.dir(d)
+										done(enableLiveUpdates);
+									})
 								})
-							})
-						}, rateTimeout)
-					})
-				}, rateTimeout)
-			})
-		}, rateTimeout)
+							}, rateTimeout)
+						})
+					}, rateTimeout)
+				})
+			}, rateTimeout)
+		})
 	})
 }
 
 
 const enableLiveUpdates = ({getState, stateUpdate}) => {
-	const chartUpdateInterval = 500;
 	const state = getState();
 	delete state.showModal;
 	delete state.showCharts;
@@ -81,10 +91,11 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 					});
 					last = chart[chart.length-1];
 				}
-				
+
+				last.high = last.high < price ? price : last.high;
+				last.low = last.low > price ? price : last.low;
 				last.close = price;
 				last.volume += size;
-				// console.log(`${pane} ${last.close} ${last.volume}`)
 				chart[chart.length-1] = last;
 				state[pane] = chart;
 			}
@@ -97,6 +108,7 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 		const product = data.product_id;
 		const price = parseFloat(data.price)
 		const date = data.date
+		const side = data.side
 		const size = parseFloat(data.size)
 		const usd = price * size
 		switch(data.type) {
@@ -105,6 +117,8 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 					case 'BTC-USD':
 						// console.log(`${price} ${side} ${size} $${usd}`)
 						addTrade({price, date, size})
+						// update the page title
+						updateTitle({price, side})
 						break;
 					default:
 						break;
@@ -120,12 +134,16 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 	}
 }
 
+const updateTitle = ({price, side}) => {
+	document.title = `${side === 'sell' ? '▲' : '▼'} $${price.toFixed(2)}`
+}
+
 const getData = span => getHistoricalCandles(span, 'BTC-USD')
 
 // pulls historical candles form GDAX for a given granularity
 function getHistoricalCandles(granularity, product){
 	const url = `https://api.gdax.com/products/${product}/candles?granularity=${granularity}`;
-	console.log(granularity, product, url)
+	// console.log(granularity, product, url)
 	return fetch(url)
 	.then(res=>res.json())
 	// .then(json=>{
@@ -133,10 +151,10 @@ function getHistoricalCandles(granularity, product){
 	// })
 	.then(json=>{
 		if(json && json[0] && json[0][0]){
-			console.log('testing')
-			const lastDate = new Date(json[0][0]*1000)
-			const firstDate = new Date(json[json.length-1][0]*1000)
-			console.log(firstDate, lastDate)
+			// console.log('testing')
+			// const lastDate = new Date(json[0][0]*1000)
+			// const firstDate = new Date(json[json.length-1][0]*1000)
+			// console.log(firstDate, lastDate)
 			return json
 		}
 	})
@@ -154,4 +172,5 @@ const parseDataArray = ({candle, product}) => ({
 	dividend: null,
 	product,
 })
+
 

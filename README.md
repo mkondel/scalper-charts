@@ -46,5 +46,7 @@ By default the windows are 1min, 15min, 1hour and 1day. The indicators are Bolli
 # <a name="pics"></a>Screenshots
 Mar 5, 2018:
 ![Mar 5, 2018](https://user-images.githubusercontent.com/3288757/37013145-67d9b83a-20c6-11e8-94d0-2dba51cb5856.png)
-Mar 8, 2018:
+Morning of Mar 8, 2018:
 ![Mar 8, 2018](https://user-images.githubusercontent.com/3288757/37135059-8114e76c-2269-11e8-995f-4857e6a79828.png)
+Evening on Mar 8, 2018:
+![Mar 8, 2018](https://user-images.githubusercontent.com/3288757/37188445-2c59ac1c-231d-11e8-81ff-8753fdfcd32e.png)

@@ -19,14 +19,14 @@ class ChartComponent extends React.Component {
                 '5min': 60*5,
                 '15min': 60*15,
                 '1hr': 60*60,
-                '4hr': 60*60*4,
+                '6hr': 60*60*6,
                 '1day': 60*60*24,
             },
             chartLabels: {
                 'a': '1min',
-                'b': '5min',
-                'c': '15min',
-                'd': '1min',
+                'b': '15min',
+                'c': '1hr',
+                'd': '6hr',
             },
             volumeProfileBins: {
                 'a': 24,

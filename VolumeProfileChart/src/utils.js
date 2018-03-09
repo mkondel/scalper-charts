@@ -2,44 +2,56 @@ window.ws = new WebSocket("wss://ws-feed.gdax.com");
 var params = {"type": "subscribe","channels": [{"name": "matches","product_ids": ["BTC-USD",]}]}
 window.ws.onopen = () => window.ws.send(JSON.stringify(params))
 
+const rateTimeout = 500;
+
 export const getInitialData = ({getState, stateUpdate, done}) =>{
-	const state = getState()
-	const possible = state.possibleIntervals
-	const chartLabels = state.chartLabels
+	const state = getState();
+	const possible = state.possibleIntervals;
+	const chartLabels = state.chartLabels;
 
 	getData(possible[chartLabels.a]).then(a => {
-		console.log(`${chartLabels.a} loaded`)
-		getData(possible[chartLabels.b]).then(b => {
-			console.log(`${chartLabels.b} loaded`)
-			getData(possible[chartLabels.c]).then(c => {
-				console.log(`${chartLabels.c} loaded`)
-				getData(possible[chartLabels.d]).then(d => {
-					console.log(`${chartLabels.d} loaded`)
-					stateUpdate({ a,b,c,d }, () => {
-						console.log('initial data loaded');
-						console.dir(d)
-						done(enableLiveUpdates);
+		console.log(`${chartLabels.a} loaded`);
+
+		setTimeout(()=>{
+			getData(possible[chartLabels.b]).then(b => {
+				console.log(`${chartLabels.b} loaded`);
+
+				setTimeout(()=>{
+					getData(possible[chartLabels.c]).then(c => {
+						console.log(`${chartLabels.c} loaded`);
+
+						setTimeout(()=>{
+							getData(possible[chartLabels.d]).then(d => {
+								console.log(`${chartLabels.d} loaded`);
+
+								stateUpdate({ a,b,c,d }, () => {
+									console.log('initial data loaded');
+									// console.dir(d)
+									done(enableLiveUpdates);
+								})
+							})
+						}, rateTimeout)
 					})
-				})
+				}, rateTimeout)
 			})
-		})
+		}, rateTimeout)
 	})
 }
 
 
 const enableLiveUpdates = ({getState, stateUpdate}) => {
-	const chartUpdateInterval = 500
-	const state = getState()
-	delete state.showModal
-	delete state.showCharts
-	delete state.cog
+	const chartUpdateInterval = 500;
+	const state = getState();
+	delete state.showModal;
+	delete state.showCharts;
+	delete state.cog;
 	//put on  a timer
 	setInterval(
 		()=>{
 			// get the latest window size
-			const stateNow = getState()
-			Object.assign(stateNow, state)
-			stateUpdate(stateNow)
+			const stateNow = getState();
+			Object.assign(stateNow, state);
+			stateUpdate(stateNow);
 			return null;
 		}, 
 		chartUpdateInterval
@@ -53,9 +65,9 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 			{pane:'c',interval: possible[chartLabels.c]},
 			{pane:'d',interval: possible[chartLabels.d]}
 		].map(({pane, interval}) => {
-			const chart = state[pane]
+			const chart = state[pane];
 			if(chart){
-				let last = chart[chart.length-1]
+				let last = chart[chart.length-1];
 				// new candle
 				if(new Date() - last.date > interval*1000){
 					// add a new candle to the chart
@@ -66,15 +78,15 @@ const enableLiveUpdates = ({getState, stateUpdate}) => {
 						low: price,
 						close: price,
 						volume: 0,
-					})
-					last = chart[chart.length-1]
+					});
+					last = chart[chart.length-1];
 				}
 				
-				last.close = price
-				last.volume += size
+				last.close = price;
+				last.volume += size;
 				// console.log(`${pane} ${last.close} ${last.volume}`)
-				chart[chart.length-1] = last
-				state[pane] = chart
+				chart[chart.length-1] = last;
+				state[pane] = chart;
 			}
 			return null;
 		})
@@ -113,13 +125,18 @@ const getData = span => getHistoricalCandles(span, 'BTC-USD')
 // pulls historical candles form GDAX for a given granularity
 function getHistoricalCandles(granularity, product){
 	const url = `https://api.gdax.com/products/${product}/candles?granularity=${granularity}`;
+	console.log(granularity, product, url)
 	return fetch(url)
 	.then(res=>res.json())
+	// .then(json=>{
+	// 	console.log(`${JSON.stringify(json)}`)
+	// })
 	.then(json=>{
 		if(json && json[0] && json[0][0]){
-			// const lastDate = new Date(json[0][0]*1000)
-			// const firstDate = new Date(json[json.length-1][0]*1000)
-			// console.log(firstDate, lastDate)
+			console.log('testing')
+			const lastDate = new Date(json[0][0]*1000)
+			const firstDate = new Date(json[json.length-1][0]*1000)
+			console.log(firstDate, lastDate)
 			return json
 		}
 	})

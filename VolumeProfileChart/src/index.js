@@ -106,7 +106,7 @@ class ChartComponent extends React.Component {
         return this.state.showModal ? 
         	<MoDaL handleCloseModal={this.handleCloseModal.bind(this)}/>
 		:
-		<div>
+		<div className={`mainDiv ${this.state.cog ? 'pad-it':null}`}>
 			{this.state.cog ? <FA name="cog" spin size='5x' /> : null}
 	        <div className={`charts ${this.state.showCharts}`}>
 	            <div className='panes'>

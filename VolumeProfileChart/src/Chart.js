@@ -68,8 +68,8 @@ class VolumeProfileChart extends React.Component {
 			.merge((d, c) => {d.rsi = c;})
 			.accessor(d => d.rsi);
 		const rsiAppearance = {
-			stroke: {line: '#000000', top: '#000000', middle: '#000000', bottom: '#000000'},
-			opacity: {top: 0.5, middle: 0.1, bottom: 0.5},
+			stroke: {line: '#FFFF00', top: '#AAAAAA', middle: '#FFFFFF', bottom: '#FFFFFF'},
+			opacity: {line: 1, top: 0.5, middle: 0.2, bottom: 0.5},
 			overSold: 70, middle: 50, overBought: 30,
 		}
 
@@ -107,15 +107,6 @@ class VolumeProfileChart extends React.Component {
 			})
 			.merge((d, c) => {d.macd = c;})
 			.accessor(d => d.macd);
-		const macdAppearance = {
-			stroke: {
-				macd: '#0000FF',
-				signal: '#FF5000',
-			},
-			fill: {
-				divergence: '#4682B4'
-			},
-		};
 
 		const calculatedData = macdCalculator(rsiCalculator(bb(changeCalculator(initialData))));
 		const xScaleProvider = discontinuousTimeScaleProvider
@@ -150,6 +141,43 @@ class VolumeProfileChart extends React.Component {
 			doubleClick()
 		}
 
+		const macdAppearance = {
+			stroke: {
+				macd: '#AAAAFF',
+				signal: '#FF5A00',
+			},
+			fill: {
+				divergence: '#2341B4'
+			},
+		};
+		const tooltipStyles = {
+			labelFill: '#FFFFFF',
+			textFill: '#FFFFFF',
+		}
+		const ohclTooltipStyles = {
+			labelFill: '#9999FF',
+			textFill: '#FFFFFF',
+			xDisplayFormat: timeFormat("%Y-%m-%d %H:%M:%S"),
+		}
+		const axisStyles = {
+			tickStroke: '#FFFFFF',
+			stroke: '#FFFFFF',
+		}
+		const coorinateStyles = {
+			// fill: '#FFFFFF',
+		}
+		const crossHairStyles = {
+			stroke: '#FFFFFF'
+		}
+		const candleStickStyles = {
+			opacity: 1,
+			wickStroke: '#FFFFFF',
+			// stroke: d => d.close > d.open ? '#6BA583' : '#FF0000',
+			// stroke: '#FFFFFF',
+			fill: d => d.close > d.open ? '#6BA583' : '#FF0000',
+			// widthRatio: 0.6,
+		}
+
 		return (
 			<ChartCanvas height={height}
 				width={width}
@@ -170,29 +198,25 @@ class VolumeProfileChart extends React.Component {
 					origin={(w, h) => [0, h - subChartHeight]} 
 					height={subChartHeight}
 				>
-					{/*<XAxis axisAt='bottom' orient='bottom' showTicks={false} outerTickSize={0} />*/}
-					{<XAxis axisAt='top' orient='top' showTicks={false} outerTickSize={0} />}
-					<YAxis axisAt='right' orient='right' ticks={2} />
+					<XAxis axisAt='top' orient='top' showTicks={false} {...axisStyles} />
+					<YAxis axisAt='left' orient='left' showTicks={true} ticks={4} {...axisStyles}/>
+					<XAxis axisAt='bottom' orient='bottom' showTicks={false} {...axisStyles} />
 
-{/*					<MouseCoordinateX
-						at='bottom'
-						orient='bottom'
-						displayFormat={timeFormat('%Y-%m-%d %H:%M:%S')}
-						rectRadius={5}
-					/>*/}
 {					<MouseCoordinateY
 						at='left'
 						orient='left'
 						displayFormat={format('.2f')}
+						{...coorinateStyles}
 					/>}
 
 					<MACDSeries yAccessor={d => d.macd}
 						{...macdAppearance} />
 {					<MACDTooltip
-						origin={[0, 15]}
+						origin={[5, 15]}
 						yAccessor={d => d.macd}
 						options={macdCalculator.options()}
 						appearance={macdAppearance}
+						{...tooltipStyles}
 					/>}
 				</Chart>
 
@@ -201,14 +225,13 @@ class VolumeProfileChart extends React.Component {
 					origin={(w, h) => [0, h - subChartHeight*2]}
 					height={subChartHeight} 
 				>
-					{<XAxis axisAt='top' orient='top' showTicks={false} outerTickSize={0} />}
-					<YAxis axisAt='right'
-						orient='right'
-						tickValues={[30, 50, 70]}/>
+					<XAxis axisAt='top' orient='top' showTicks={false} outerTickSize={0} {...axisStyles} />
+					<YAxis axisAt='right' orient='right' tickValues={[30, 50, 70]} {...axisStyles}/>
 					<MouseCoordinateY
 						at='left'
 						orient='left'
 						displayFormat={format('.2f')} 
+						{...coorinateStyles}
 						/>
 
 					<RSISeries 
@@ -216,9 +239,11 @@ class VolumeProfileChart extends React.Component {
 						{...rsiAppearance}
 					/>
 
-					<RSITooltip origin={[0, 15]}
+					<RSITooltip origin={[5, 15]}
 						yAccessor={d => d.rsi}
-						options={rsiCalculator.options()} />
+						options={rsiCalculator.options()} 
+						{...tooltipStyles}
+					/>
 				</Chart>
 
 				<Chart id={2}
@@ -226,11 +251,12 @@ class VolumeProfileChart extends React.Component {
 					height={subChartHeight - 10}
 					origin={(w, h) => [0, h - subChartHeight*3 + 10]}
 				>
-					{/*<YAxis axisAt='left' orient='left' ticks={5} tickFormat={format('.2s')}/>*/}
 					<MouseCoordinateY
 						at='left'
 						orient='left'
-						displayFormat={format('.4s')} />
+						displayFormat={format('.4s')} 
+						{...coorinateStyles}
+					/>
 
 					<BarSeries yAccessor={d => d.volume}
 						widthRatio={1}
@@ -241,14 +267,14 @@ class VolumeProfileChart extends React.Component {
 				</Chart>
 				<Chart id={1}
 					yExtents={[d => [d.high , d.low ]]}
-					padding={{ top: 20, bottom: 30 }}
+					padding={{ top: 30, bottom: 30 }}
 					height={mainChartHeight}
 				>
-					{<XAxis axisAt='top' orient='bottom' showTicks={false}/>}
-					{<XAxis axisAt='bottom' orient='top' ticks={5}/>}
-					<YAxis axisAt='right' orient='right' ticks={10} />
-					<YAxis axisAt='right' orient='right' stroke='#000000' showTicks={false} />
-					<YAxis axisAt='left' orient='left' stroke='#000000' showTicks={false} />
+					<XAxis axisAt='top' orient='bottom' showTicks={false} {...axisStyles}/>
+					<XAxis axisAt='bottom' orient='top' ticks={5} {...axisStyles}/>
+					<YAxis axisAt='right' orient='right' ticks={10}  {...axisStyles}/>
+					<YAxis axisAt='right' orient='right' showTicks={false}  {...axisStyles}/>
+					<YAxis axisAt='left' orient='left' showTicks={false}  {...axisStyles}/>
 {					<MouseCoordinateX
 						at='bottom'
 						orient='top'
@@ -256,7 +282,9 @@ class VolumeProfileChart extends React.Component {
 					<MouseCoordinateY
 						at='right'
 						orient='right'
-						displayFormat={format('.2f')} />
+						displayFormat={format('.2f')} 
+						{...coorinateStyles}
+					/>
 
 					<BollingerSeries yAccessor={d => d.bb}
 						stroke={bbStroke}
@@ -269,18 +297,14 @@ class VolumeProfileChart extends React.Component {
 						maxProfileWidthPercent={30}
 						stroke='#00000000'
 					/>
-					<CandlestickSeries 
-						opacity={1} 
-						wickStroke='#000000'
-						// stroke='#000000'
-						stroke={d => d.close > d.open ? '#6BA583' : '#FF0000'}
-						fill={d => d.close > d.open ? '#6BA583' : '#FF0000'}
-						// widthRatio={0.6}
-					/>
+					<CandlestickSeries {...candleStickStyles}/>
 					<EdgeIndicator itemType='last' orient='right' edgeAt='right'
 						yAccessor={d => d.close} fill={d => d.close > d.open ? '#6BA583' : '#FF0000'}/>
 
-					<OHLCTooltip origin={[0, -10]} />
+					<OHLCTooltip 
+						origin={[0, -10]} 
+						{...ohclTooltipStyles}
+					/>
 
 
 					<Label 
@@ -298,7 +322,7 @@ class VolumeProfileChart extends React.Component {
 					/>
 					
 				</Chart>
-				<CrossHairCursor />
+				<CrossHairCursor {...crossHairStyles} />
 			</ChartCanvas>
 		);
 	}

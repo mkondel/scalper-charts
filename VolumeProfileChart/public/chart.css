@@ -1,17 +1,12 @@
 .theme {
-    /*background: black;*/
+    background: black;
     /*background: #131222;*/
     /*background: #1C2030;*/
-    /*color: white;*/
+    color: white;
 }
 
 .panes {
     display: flex;
-}
-
-.react-stockchart {
-    /*background: cyan;*/
-    /*border: 1px solid black;*/
 }
 
 .modal {
@@ -31,4 +26,11 @@
 }
 .show {
     display: inherit;
+}
+
+.mainDiv {
+    /*text-align: center;*/
+}
+.pad-it{
+    padding: 20% 50% 0 50%;
 }

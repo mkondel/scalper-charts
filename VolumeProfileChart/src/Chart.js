@@ -57,7 +57,7 @@ class VolumeProfileChart extends React.Component {
 			doubleClick,
 		 } = this.props;
 
-		const candleOffset = 3
+		const candleOffset = 2
 
 		// const mainChartHeight = height/2
 		const mainChartHeight = height * 5/8
@@ -84,12 +84,6 @@ class VolumeProfileChart extends React.Component {
 		const bb = bollingerBand()
 			.merge((d, c) => {d.bb = c;})
 			.accessor(d => d.bb);
-		const bbStroke = {
-			top: '#BBBBBB77',
-			middle: '#88888877',
-			bottom: '#BBBBBB77',
-		};
-		const bbFill = '#4682B411';
 
 		// defaults
 		// const MACD = {
@@ -141,6 +135,14 @@ class VolumeProfileChart extends React.Component {
 			doubleClick()
 		}
 
+		const bbStyles = {
+			stroke: {
+				top: '#BBBBBB00',
+				middle: '#88888877',
+				bottom: '#BBBBBB00',
+			},
+			fill: '#4682FF',
+		}
 		const macdAppearance = {
 			stroke: {
 				macd: '#AAAAFF',
@@ -172,10 +174,31 @@ class VolumeProfileChart extends React.Component {
 		const candleStickStyles = {
 			opacity: 1,
 			wickStroke: '#FFFFFF',
+			// stroke: '#FFFFFF55',
+			stroke: '#000000',
 			// stroke: d => d.close > d.open ? '#6BA583' : '#FF0000',
-			// stroke: '#FFFFFF',
+			candleStrokeWidth: 1,
+			// widthRatio: 0.5,
 			fill: d => d.close > d.open ? '#6BA583' : '#FF0000',
-			// widthRatio: 0.6,
+		}
+		const volumeProfileStyles = {
+			opacity: 0.6,
+			bins: volumeProfileBins,
+			orient: 'right' ,
+			maxProfileWidthPercent: 30,
+			stroke: '#000000',
+			partialStartOK: false,
+			partialEndOK: false,
+		}
+		const volumeBarsStyles = {
+			widthRatio: 1,
+			opacity: 0.5,
+			fill: d => d.close > d.open ? '#6BA583' : '#FF0000',
+			stroke: false,
+		}
+		const edgeStyles = {
+			lineStroke: 'white',
+			fill: d => d.close > d.open ? '#6BA583' : '#FF0000',
 		}
 
 		return (
@@ -259,10 +282,7 @@ class VolumeProfileChart extends React.Component {
 					/>
 
 					<BarSeries yAccessor={d => d.volume}
-						widthRatio={1}
-						opacity={0.5}
-						fill={d => d.close > d.open ? '#6BA583' : '#FF0000'}
-						stroke={false}
+						{...volumeBarsStyles}
 					/>
 				</Chart>
 				<Chart id={1}
@@ -270,11 +290,7 @@ class VolumeProfileChart extends React.Component {
 					padding={{ top: 30, bottom: 30 }}
 					height={mainChartHeight}
 				>
-					<XAxis axisAt='top' orient='bottom' showTicks={false} {...axisStyles}/>
-					<XAxis axisAt='bottom' orient='top' ticks={5} {...axisStyles}/>
-					<YAxis axisAt='right' orient='right' ticks={10}  {...axisStyles}/>
-					<YAxis axisAt='right' orient='right' showTicks={false}  {...axisStyles}/>
-					<YAxis axisAt='left' orient='left' showTicks={false}  {...axisStyles}/>
+					<Label text={chartLabel} y={-5} x={-20} textAnchor='left' fill='#FFFFFF'/>
 {					<MouseCoordinateX
 						at='bottom'
 						orient='top'
@@ -286,33 +302,12 @@ class VolumeProfileChart extends React.Component {
 						{...coorinateStyles}
 					/>
 
-					<BollingerSeries yAccessor={d => d.bb}
-						stroke={bbStroke}
-						fill={bbFill} 
-					/>
-					<VolumeProfileSeries 
-						opacity={0.3}
-						bins={volumeProfileBins} 
-						orient='right' 
-						maxProfileWidthPercent={30}
-						stroke='#00000000'
-					/>
-					<CandlestickSeries {...candleStickStyles}/>
-					<EdgeIndicator itemType='last' orient='right' edgeAt='right'
-						yAccessor={d => d.close} fill={d => d.close > d.open ? '#6BA583' : '#FF0000'}/>
+					<BollingerSeries yAccessor={d => d.bb} {...bbStyles}/>
+					
+					<VolumeProfileSeries {...volumeProfileStyles}/>
 
-					<OHLCTooltip 
-						origin={[0, -10]} 
-						{...ohclTooltipStyles}
-					/>
-
-
-					<Label 
-						y={15} 
-						x={5} 
-						text={chartLabel}
-						textAnchor='left'
-					/>
+					<OHLCTooltip origin={[20, -10]} {...ohclTooltipStyles} />
+					
 					<ClickCallback
 						// left mouse button
 						onClick={ leftMouseClick }
@@ -320,7 +315,22 @@ class VolumeProfileChart extends React.Component {
 						onContextMenu={ rightMouseClick }
 						onDoubleClick={ leftMouseDoubleClick }
 					/>
+
+					<CandlestickSeries {...candleStickStyles}/>
 					
+					<XAxis axisAt='top' orient='bottom' showTicks={false} {...axisStyles}/>
+					<XAxis axisAt='bottom' orient='top' ticks={5} {...axisStyles}/>
+					<YAxis axisAt='right' orient='right' ticks={10}  {...axisStyles}/>
+					<YAxis axisAt='right' orient='right' showTicks={false}  {...axisStyles}/>
+					<YAxis axisAt='left' orient='left' showTicks={false}  {...axisStyles}/>
+
+					<EdgeIndicator
+						yAccessor={d => d.close} 
+						itemType='last'
+						orient='right'
+						edgeAt='right'
+						{...edgeStyles}
+					/>
 				</Chart>
 				<CrossHairCursor {...crossHairStyles} />
 			</ChartCanvas>

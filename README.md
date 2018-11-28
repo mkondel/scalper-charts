@@ -9,7 +9,7 @@ scalper-charts helps traders make educated decisions fast. The typical use-case 
 * [Screenshots](#pics)
 
 # <a name="demo"></a>Live Demo
-[Scalper Charts](http://scalper-charts.us-east-1.elasticbeanstalk.com/ "Scalper Helper") demo running on AWS Beanstalk.
+[Scalper Charts](http://scalperman.s3-website-us-east-1.amazonaws.com/ "Scalper Helper") demo running on AWS Beanstalk.
 
 # <a name="goals"></a>Goals
 - ~4 pane window with 2x2 charts~
